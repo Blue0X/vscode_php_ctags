@@ -6,6 +6,7 @@ var file_manager = require("./file_manager");
 var CTAG_COMMAND = "ctags";
 var CTAGS_TAG_FILE_NAME = "ctags.tmp";
 var CTAG_OPTION = "-R --fields=-aiklmnSzt+fsK --languages=php --php-kinds=cidf --excmd=number";
+var CTAG_OUTLINE_OPTION = "--fields=-aiklmnSzt+fsK --php-kinds=cidf --excmd=number -f -";
 var LARGE_FILE_SIZE_BYTE = (50 * 1024 * 1024); // 50MB
 var Status;
 
@@ -148,7 +149,9 @@ var CTAG_Manager = (function () {
         var manager = this;
         vscode_1.window.showQuickPick(list.map(function(line) {
             var tag = manager._extract_tag(line);
-            return tag.symbol + (showPath ? "\t" + tag.file : '');
+            if (tag) return tag.symbol + (showPath ? "\t" + tag.file : '');
+        }).filter(function(label) {
+            return label != undefined;
         })).then(function(label){
             for (var i = 0; i < list.length; i++) {
                 if (list[i].indexOf(label) == 0) {
@@ -211,9 +214,10 @@ var CTAG_Manager = (function () {
         var parent = this;
         var filePath = textEditor.document.fileName;
         var exec = require('child_process').exec;
-        var command = CTAG_COMMAND + ' ' + CTAG_OPTION + ' -f - "' + filePath + '"';
+        var command = CTAG_COMMAND + ' ' + CTAG_OUTLINE_OPTION + ' "' + filePath + '"';
         exec(command, {}, function (err, stdout, stderr) {
             if (!stdout) return;
+            // console.log(stdout);
             var lines = stdout.split("\r\n");
             lines.pop();
             parent._show_quick_pick(lines, false);

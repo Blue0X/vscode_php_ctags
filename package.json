@@ -13,6 +13,7 @@
     "activationEvents": [
         "onCommand:extension.ctag_generate",
         "onCommand:extension.ctag_search",
+        "onCommand:extension.ctag_outline",
         "onLanguage:php"
     ],
     "main": "./out/src/extension",

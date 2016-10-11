@@ -48,7 +48,11 @@ var Extension = (function () {
     Extension.prototype.search = function () {
         var parent = this;
         this.ctag_manager.load_tags();
-        vscode.window.showInputBox("Input the symbol name").then(function (targetSymbol) {
+        var editor = vscode.window.activeTextEditor;
+        var selection = editor.selections[0];
+        var range = new vscode.Range(selection.start, selection.end);
+        var selectedString = editor.document.getText(range);
+        vscode.window.showInputBox({prompt: 'Input the symbol name', value: selectedString}).then(function (targetSymbol) {
             parent.ctag_manager.search(targetSymbol, function (msg) {
                 notification.print_info(msg);
             });
