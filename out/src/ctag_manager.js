@@ -51,6 +51,7 @@ var CTAG_Manager = (function () {
         }
         var manager = this;
         this._status = Status.LOADING;
+        this._tags = [];
 
         if (!file_manager.test_file_size(this._ctags_tagpath, LARGE_FILE_SIZE_BYTE)) {
             notification.print_error("Can't load large ctag file larger than " + LARGE_FILE_SIZE_BYTE / 1024 / 1024 + "MB. Loading has been cancelled");
@@ -138,7 +139,12 @@ var CTAG_Manager = (function () {
         }
 
         if (list.length > 0) {
-            this._show_quick_pick(list, true);
+            if (list.length == 1) {
+                this._goto_tag_on_doc(list[0]);
+            }
+            else {
+                this._show_quick_pick(list, true);
+            }
         }
         else {
             notification.print_error("Cannot find the symbol:" + targetSymbol);
@@ -200,7 +206,7 @@ var CTAG_Manager = (function () {
         //Run ctag;
         notification.print_info("Generating ctag file...");
         exec(command, { cwd: parent._current_path }, function (err, stdout, stderr) {
-            notification.print_info("Ctag generation has been completed. Loading the tag file low..");
+            notification.print_info("Ctag generation has been completed.");
             parent._status = Status.GENERATED;
             parent._load_tags();
         });
